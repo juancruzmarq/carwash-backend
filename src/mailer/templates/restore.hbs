@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Validación de Cuenta</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin: auto;
+        max-width: 600px;
+        padding: 20px;
+        text-align: center;
+      }
+      a.button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      a.button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Restablecer tu contraseña de Adminzee</h1>
+      <p>
+        Hola
+        Para restablecer tu contraseña, por favor haz clic en el siguiente enlace:
+      </p>
+        <a href="{{ url }}" class="button">Restablecer Contraseña</a>
+        
+      <p>
+        El enlace expirará en 24 horas. 
+        Si no tienes ningun resultado al hacer clic en el enlace, copia y pega la siguiente URL en tu navegador:
+        
+        <a href="{{ url }}">{{ url }}</a>
+
+        Gracias. 
+        El equipo de Adminzee
+      </p>
+
+      <br /><br />
+      <p>
+        Si no solicitaste restablecer tu contraseña, por favor ignora este mensaje.
+    </div>
+  </body>
+</html>

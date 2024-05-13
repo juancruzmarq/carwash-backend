@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model auth_token {
+  idAuthToken Int      @id @default(autoincrement()) @map("id_auth_token")
+  token       String   @unique
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  expireDate  DateTime @map("expire_date")
+
+  user                 user       @relation(fields: [idUser], references: [idUser])
+  idUser               Int        @map("id_user")
+  tokenType            tokenType? @relation(fields: [tokenTypeIdTokenType], references: [idTokenType])
+  tokenTypeIdTokenType Int?
+}
+
+model tokenType {
+  idTokenType Int      @id @default(autoincrement()) @map("id_token_type")
+  name        String   @unique
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  auth_tokens auth_token[]
+}
+
+model role {
+  idRole    Int      @id @default(autoincrement()) @map("id_role")
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users           userRole[]
+  rolePermissions rolePermission[]
+}
+
+model permission {
+  idPermission Int      @id @default(autoincrement()) @map("id_permission")
+  name         String   @unique
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  rolePermissions rolePermission[]
+}
+
+model rolePermission {
+  idRole       Int @map("id_role")
+  idPermission Int @map("id_permission")
+
+  role       role       @relation(fields: [idRole], references: [idRole])
+  permission permission @relation(fields: [idPermission], references: [idPermission])
+
+  @@id([idRole, idPermission])
+  @@map("role_permissions")
+}
+
+model user {
+  idUser    Int      @id @default(autoincrement()) @map("id_user")
+  name      String?
+  surname   String?
+  email     String   @unique
+  phone     String?
+  password  String
+  validated Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  carwash     carwash?
+  userRoles   userRole[]
+  userBrands  userBrand[]
+  appointment appointment[]
+  auth_token  auth_token[]
+}
+
+model userRole {
+  idUser Int @map("id_user")
+  idRole Int @map("id_role")
+
+  user user @relation(fields: [idUser], references: [idUser])
+  role role @relation(fields: [idRole], references: [idRole])
+
+  @@id([idUser, idRole])
+  @@map("user_roles")
+}
+
+model client {
+  idClient  Int      @id @default(autoincrement()) @map("id_client")
+  name      String
+  surname   String?
+  email     String?  @unique
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  vehicles     vehicle[]
+  appointments appointment[]
+}
+
+model carwash {
+  idCarwash Int      @id @default(autoincrement()) @map("id_carwash")
+  name      String
+  address   String?
+  phone     String?
+  email     String?
+  capacity  Int?
+  photo     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         user          @relation(fields: [idUser], references: [idUser])
+  idUser       Int           @unique @map("id_user")
+  services     service[]
+  appointments appointment[]
+  vehicles     vehicle[]
+  promotions   promotion[]
+}
+
+model service {
+  idService Int      @id @default(autoincrement()) @map("id_service")
+  name      String
+  carwash   carwash  @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash Int      @map("id_carwash")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  appointments   appointment[]
+  priceHistories priceHistory[]
+
+  @@unique([name, idCarwash])
+}
+
+model priceHistory {
+  idPriceHistory Int       @id @default(autoincrement()) @map("id_price_history")
+  price          Float
+  createdAt      DateTime  @default(now()) @map("created_at")
+  endedAt        DateTime? @map("ended_at")
+
+  service   service @relation(fields: [idService], references: [idService])
+  idService Int     @map("id_service")
+
+  @@unique([idService, createdAt])
+  @@map("price_history")
+}
+
+model appointment {
+  idAppointment Int      @id @default(autoincrement()) @map("id_appointment")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  carwash        carwash      @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash      Int          @map("id_carwash")
+  service        service      @relation(fields: [idService], references: [idService])
+  idService      Int          @map("id_service")
+  vehicle        vehicle      @relation(fields: [idVehicle], references: [idVehicle])
+  idVehicle      Int          @map("id_vehicle")
+  client         client       @relation(fields: [idClient], references: [idClient])
+  idClient       Int          @map("id_client")
+  state          stateHistory @relation(fields: [idStateHistory], references: [idStateHistory])
+  idStateHistory Int          @map("id_state_history")
+  promotion      promotion?   @relation(fields: [idPromotion], references: [idPromotion])
+  idPromotion    Int          @map("id_promotion")
+  user           user         @relation(fields: [idUser], references: [idUser])
+  idUser         Int          @map("id_user")
+}
+
+model promotion {
+  idPromotion Int      @id @default(autoincrement()) @map("id_promotion")
+  description String?
+  discount    Float
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  carwash      carwash       @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash    Int           @map("id_carwash")
+  appointments appointment[]
+}
+
+model state {
+  idState   Int      @id @default(autoincrement()) @map("id_state")
+  name      String
+  context   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  stateHistories stateHistory[]
+
+  @@unique([name, context])
+}
+
+model stateHistory {
+  idStateHistory Int       @id @default(autoincrement()) @map("id_state_history")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  endedAt        DateTime? @map("ended_at")
+
+  state       state         @relation(fields: [idState], references: [idState])
+  idState     Int           @map("id_state")
+  appointment appointment[]
+
+  @@map("state_histories")
+}
+
+// Global Models
+model globalBrand {
+  idGlobalBrand Int      @id @default(autoincrement()) @map("id_global_brand")
+  name          String   @unique
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  globalModels globalModel[]
+
+  @@map("global_brand")
+}
+
+model globalModel {
+  idGlobalModel Int    @id @default(autoincrement()) @map("id_global_model")
+  name          String @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  brand         globalBrand @relation(fields: [idGlobalBrand], references: [idGlobalBrand])
+  idGlobalBrand Int         @map("id_global_brand")
+  vehicles      vehicle[]
+
+  @@map("global_model")
+}
+
+// Carwash Models
+model userBrand {
+  idUserBrand Int    @id @default(autoincrement()) @map("id_user_brand")
+  name        String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user       user        @relation(fields: [idUser], references: [idUser])
+  idUser     Int         @map("id_user")
+  userModels userModel[]
+
+  @@map("user_brand")
+}
+
+model userModel {
+  idUserModel Int      @id @default(autoincrement()) @map("id_user_model")
+  name        String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  brand       userBrand @relation(fields: [idUserBrand], references: [idUserBrand])
+  idUserBrand Int       @map("id_user_brand")
+  vehicles    vehicle[]
+
+  @@map("user_model")
+}
+
+// Vehículo referenciando ambos modelos
+model vehicle {
+  idVehicle Int      @id @default(autoincrement()) @map("id_vehicle")
+  year      Int
+  color     String?
+  plate     String?  @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Referencias a modelos y marcas
+  globalModel   globalModel   @relation(fields: [idGlobalModel], references: [idGlobalModel])
+  idGlobalModel Int           @map("id_global_model")
+  userModel     userModel     @relation(fields: [idUserModel], references: [idUserModel])
+  idUserModel   Int           @map("id_user_model")
+  carwash       carwash       @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash     Int           @map("id_carwash")
+  client        client        @relation(fields: [idClient], references: [idClient])
+  idClient      Int           @map("id_client")
+  appointments  appointment[]
+}
