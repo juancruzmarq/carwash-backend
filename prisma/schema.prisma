@@ -74,7 +74,8 @@ model user {
 
   carwash     carwash?
   userRoles   userRole[]
-  userBrands  userBrand[]
+  brands      brand[]
+  models      model[]
   appointment appointment[]
   auth_token  auth_token[]
 }
@@ -210,57 +211,33 @@ model stateHistory {
 }
 
 // Global Models
-model globalBrand {
-  idGlobalBrand Int      @id @default(autoincrement()) @map("id_global_brand")
-  name          String   @unique
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+model brand {
+  idBrand   Int      @id @default(autoincrement()) @map("id_brand")
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  globalModels globalModel[]
+  model  model[]
+  user   user?   @relation(fields: [idUser], references: [idUser])
+  idUser Int?    @map("id_user")
 
-  @@map("global_brand")
+  @@unique([name, idUser])
 }
 
-model globalModel {
-  idGlobalModel Int    @id @default(autoincrement()) @map("id_global_model")
-  name          String @unique
+model model {
+  idModel Int    @id @default(autoincrement()) @map("id_model")
+  name    String
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  brand         globalBrand @relation(fields: [idGlobalBrand], references: [idGlobalBrand])
-  idGlobalBrand Int         @map("id_global_brand")
-  vehicles      vehicle[]
+  brand    brand     @relation(fields: [idBrand], references: [idBrand])
+  idBrand  Int       @map("id_brand")
+  user     user?     @relation(fields: [idUser], references: [idUser])
+  idUser   Int?      @map("id_user")
+  vehicles vehicle[]
 
-  @@map("global_model")
-}
-
-// Carwash Models
-model userBrand {
-  idUserBrand Int    @id @default(autoincrement()) @map("id_user_brand")
-  name        String
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  user       user        @relation(fields: [idUser], references: [idUser])
-  idUser     Int         @map("id_user")
-  userModels userModel[]
-
-  @@map("user_brand")
-}
-
-model userModel {
-  idUserModel Int      @id @default(autoincrement()) @map("id_user_model")
-  name        String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  brand       userBrand @relation(fields: [idUserBrand], references: [idUserBrand])
-  idUserBrand Int       @map("id_user_brand")
-  vehicles    vehicle[]
-
-  @@map("user_model")
+  @@unique([name, idBrand, idUser])
 }
 
 // Vehículo referenciando ambos modelos
@@ -273,13 +250,11 @@ model vehicle {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Referencias a modelos y marcas
-  globalModel   globalModel   @relation(fields: [idGlobalModel], references: [idGlobalModel])
-  idGlobalModel Int           @map("id_global_model")
-  userModel     userModel     @relation(fields: [idUserModel], references: [idUserModel])
-  idUserModel   Int           @map("id_user_model")
-  carwash       carwash       @relation(fields: [idCarwash], references: [idCarwash])
-  idCarwash     Int           @map("id_carwash")
-  client        client        @relation(fields: [idClient], references: [idClient])
-  idClient      Int           @map("id_client")
-  appointments  appointment[]
+  carwash      carwash       @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash    Int           @map("id_carwash")
+  client       client        @relation(fields: [idClient], references: [idClient])
+  idClient     Int           @map("id_client")
+  appointments appointment[]
+  model        model?        @relation(fields: [modelIdModel], references: [idModel])
+  modelIdModel Int?
 }
