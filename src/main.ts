@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { Config } from './common/config';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const logger = app.get('CarwashLogger');
+  const logger = new Logger('bootstrap');
 
   // Check all env variables are set
   const configService = app.get(ConfigService);

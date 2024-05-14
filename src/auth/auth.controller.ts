@@ -1,24 +1,18 @@
 // nestjs imports
-import {
-  Body,
-  Controller,
-  Param,
-  ParseIntPipe,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 
 // Local imports
 import { AuthService } from './auth.service';
 import { RestoreDto } from './dto/restore-password.dto';
 import { SignupDto } from './dto/signup.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { TokenService } from 'src/token/token.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { ForgotDto } from './dto/forgot-password.dto';
 import { AccessTokenGuard } from './guards/access-jwt.guard';
 import { RefreshTokenGuard } from './guards/refresh-jwt.guard';
+import { TokenService } from './token.service';
+import { Request } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -50,11 +44,11 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'User logout' })
-  @ApiParam({ name: 'id', type: Number })
-  @Post('/logout/:id')
   @UseGuards(AccessTokenGuard)
-  async logout(@Param('id', new ParseIntPipe()) id: number) {
-    return this.authService.logout(id);
+  @Post('/logout')
+  async logout(@Req() req: Request) {
+    const { sub } = req.user as any;
+    return await this.authService.logout(sub);
   }
 
   @ApiOperation({ summary: 'Refresh token' })

@@ -27,6 +27,8 @@ model tokenType {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   auth_tokens auth_token[]
+
+  @@map("token_type")
 }
 
 model role {
@@ -119,6 +121,8 @@ model carwash {
   appointments appointment[]
   vehicles     vehicle[]
   promotions   promotion[]
+
+  @@unique([name, idUser])
 }
 
 model service {

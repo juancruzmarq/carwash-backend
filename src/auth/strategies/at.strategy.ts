@@ -6,15 +6,11 @@ import { ConfigService } from '@nestjs/config';
 
 import { Config } from 'src/common/config';
 import { JwtPayload } from '../types/jwtPayload.type';
-import { JwtPayloadWithRt } from '../types/jwtPayloadWithRt.type';
-import { TokenService } from 'src/token/token.service';
+import { JwtPayloadWithAt } from '../types/jwtPayloadWithAt.type';
 
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(
-    config: ConfigService,
-    private readonly tokenService: TokenService,
-  ) {
+  constructor(config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.get<string>(Config.JWT_SECRET),
@@ -22,21 +18,13 @@ export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  validate(req: Request, payload: JwtPayload): JwtPayloadWithRt {
-    const refreshToken = req
-      ?.get('authorization')
-      ?.replace('Bearer', '')
-      .trim();
-
-    if (!refreshToken) throw new ForbiddenException('Refresh token malformed');
-
-    if (!this.tokenService.findToken(refreshToken)) {
-      throw new ForbiddenException('Refresh token not found');
-    }
+  validate(req: Request, payload: JwtPayload): JwtPayloadWithAt {
+    const accessToken = req?.get('authorization')?.replace('Bearer', '').trim();
+    if (!accessToken) throw new ForbiddenException('Refresh token malformed');
 
     return {
       ...payload,
-      refreshToken,
+      accessToken,
     };
   }
 }

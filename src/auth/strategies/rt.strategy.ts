@@ -5,7 +5,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Config } from 'src/common/config';
 import { JwtPayload } from '../types/jwtPayload.type';
 import { Request } from 'express';
-import { TokenService } from 'src/token/token.service';
+import { TokenService } from '../token.service';
+import { JwtPayloadWithRt } from '../types/jwtPayloadWithRt.type';
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -16,10 +17,11 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.get<string>(Config.JWT_SECRET),
+      passReqToCallback: true,
     });
   }
 
-  validate(req: Request, payload: JwtPayload) {
+  validate(req: Request, payload: JwtPayload): JwtPayloadWithRt {
     const refreshToken = req
       ?.get('authorization')
       ?.replace('Bearer', '')
@@ -30,6 +32,9 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     if (!this.tokenService.findToken(refreshToken)) {
       throw new ForbiddenException('Refresh token not found');
     }
-    return payload;
+    return {
+      ...payload,
+      refreshToken,
+    };
   }
 }

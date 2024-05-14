@@ -13,6 +13,7 @@ import { Config } from 'src/common/config';
         transport: {
           host: config.get(Config.MAIL_HOST),
           secure: false,
+          port: config.get(Config.MAIL_PORT),
           auth: {
             user: config.get(Config.MAIL_USER),
             pass: config.get(Config.MAIL_PASS),
@@ -25,7 +26,7 @@ import { Config } from 'src/common/config';
           dir: join(__dirname, 'templates'),
           adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
           options: {
-            strict: true,
+            strict: false,
           },
         },
       }),

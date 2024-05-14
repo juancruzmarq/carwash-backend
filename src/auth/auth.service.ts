@@ -11,11 +11,11 @@ import { RestoreDto } from './dto/restore-password.dto';
 import { ISendMailOptions } from '@nestjs-modules/mailer';
 import { SignupDto } from './dto/signup.dto';
 import { exclude } from 'src/common/utils/exclude';
-import { TokenService } from 'src/token/token.service';
 import { Config } from 'src/common/config';
 import { UserWithoutPassword } from 'src/user/types/userWithoutPassword.type';
 import { errorHandler } from 'src/common/utils/errorHandler';
 import { ForgotDto } from './dto/forgot-password.dto';
+import { TokenService } from './token.service';
 
 export interface SinginResponse {
   user: UserWithoutPassword;

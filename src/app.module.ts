@@ -9,7 +9,6 @@ import { BrandModule } from './brand/brand.module';
 import { ServiceModule } from './service/service.module';
 import { ModelModule } from './model/model.module';
 import { CarwashModule } from './carwash/carwash.module';
-import { TokenModule } from './token/token.module';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MailerModule } from './mailer/mailer.module';
@@ -33,7 +32,6 @@ import { MailerModule } from './mailer/mailer.module';
     ServiceModule,
     ModelModule,
     CarwashModule,
-    TokenModule,
     MailerModule,
   ],
   controllers: [AppController],

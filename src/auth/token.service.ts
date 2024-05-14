@@ -3,19 +3,27 @@ import { JwtService } from '@nestjs/jwt';
 import { auth_token, user } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
-import { TokenType } from './types/token.types';
 import { errorHandler } from 'src/common/utils/errorHandler';
 import { Response, Status } from 'src/common/types/response.type';
 import { UserWithoutPassword } from 'src/user/types/userWithoutPassword.type';
+import { TokenType } from './types/token.types';
+import * as cr from 'crypto-js';
+import { ConfigService } from '@nestjs/config';
+import { Config } from 'src/common/config';
 
 @Injectable()
 export class TokenService {
   private readonly logger = new Logger(TokenService.name);
+  private readonly jwtSecret: string;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.jwtSecret = this.configService.get<string>(Config.JWT_SECRET);
+  }
 
   /**
    * Create a refresh token for a user
@@ -143,10 +151,7 @@ export class TokenService {
   async revokeTokenFromUser(id: number) {
     try {
       await this.prisma.auth_token.deleteMany({
-        where: {
-          idUser: id,
-          tokenType: { name: { in: [TokenType.ACCESS, TokenType.REFRESH] } },
-        },
+        where: { idUser: id },
       });
     } catch (error) {
       throw errorHandler(this.logger, error, 'error on revoke token from user');
@@ -358,10 +363,7 @@ export class TokenService {
       const expires = new Date();
       expires.setHours(expires.getHours() + expiresHours);
 
-      const token = await this.jwtService.signAsync(
-        { sub: user.idUser, email: user.email },
-        { expiresIn: 60 * 60 * expiresHours }, // 1 minuto * 60 = 1 hora * 24 = 1 día
-      );
+      const token = cr.AES.encrypt(`${user.idUser}`, this.jwtSecret).toString();
 
       const validationToken = await this.prisma.auth_token.create({
         data: {

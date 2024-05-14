@@ -9,4 +9,5 @@ export enum Config {
   MAIL_HOST = 'MAIL_HOST',
   MAIL_USER = 'MAIL_USER',
   MAIL_PASS = 'MAIL_PASS',
+  MAIL_PORT = 'MAIL_PORT',
 }
