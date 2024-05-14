@@ -55,7 +55,7 @@ export class CarwashController {
   @ApiOperation({ summary: 'Delete a carwash' })
   @UseGuards(AccessTokenGuard)
   @Delete('/:id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: number) {
     return await this.carwashService.delete(id);
   }
 }

@@ -109,4 +109,29 @@ export class CarwashService {
       data: updatedCarwash,
     };
   }
+
+  // TODO: Implement soft delete
+  async delete(id: number): Promise<Response<carwash>> {
+    const carwash = await this.prismaService.carwash.findUnique({
+      where: {
+        idCarwash: id,
+      },
+    });
+
+    if (!carwash) {
+      throw new Error('Carwash not found');
+    }
+
+    await this.prismaService.carwash.delete({
+      where: {
+        idCarwash: id,
+      },
+    });
+
+    return {
+      status: Status.SUCCESS,
+      message: 'Carwash deleted successfully',
+      data: carwash,
+    };
+  }
 }
