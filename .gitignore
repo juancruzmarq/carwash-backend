@@ -56,7 +56,8 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Python
-Scripts
-Lib
-Include
-pyvenv.cfg
+src/script/Scripts
+src/script/Lib
+src/script/Include
+src/script/pyvenv.cfg
+src/script/bin
