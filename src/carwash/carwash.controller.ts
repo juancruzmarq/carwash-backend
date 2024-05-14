@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { CarwashService } from './carwash.service';
@@ -13,6 +14,7 @@ import { ApiOperation } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/auth/guards/access-jwt.guard';
 import { CreateCarwashDto } from './dto/create-carwash.dto';
 import { UpdateCarwashDto } from './dto/update-carwash.dto';
+import { Request } from 'express';
 
 @Controller('carwash')
 export class CarwashController {
@@ -26,9 +28,10 @@ export class CarwashController {
 
   @ApiOperation({ summary: 'Find all carwashes by user' })
   @UseGuards(AccessTokenGuard)
-  @Get('/user/:idUser')
-  async findAllByUser(@Param('idUser') idUser: number) {
-    return await this.carwashService.findAllByUser(idUser);
+  @Get('/user')
+  async findAllByUser(@Req() req: Request) {
+    const { sub } = req.user as any;
+    return await this.carwashService.findAllByUser(sub);
   }
 
   @ApiOperation({ summary: 'Find one carwash' })

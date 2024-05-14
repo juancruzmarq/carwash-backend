@@ -103,6 +103,7 @@ model client {
 
   vehicles     vehicle[]
   appointments appointment[]
+  stateHistory stateHistory[]
 }
 
 model carwash {
@@ -158,20 +159,19 @@ model appointment {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  carwash        carwash      @relation(fields: [idCarwash], references: [idCarwash])
-  idCarwash      Int          @map("id_carwash")
-  service        service      @relation(fields: [idService], references: [idService])
-  idService      Int          @map("id_service")
-  vehicle        vehicle      @relation(fields: [idVehicle], references: [idVehicle])
-  idVehicle      Int          @map("id_vehicle")
-  client         client       @relation(fields: [idClient], references: [idClient])
-  idClient       Int          @map("id_client")
-  state          stateHistory @relation(fields: [idStateHistory], references: [idStateHistory])
-  idStateHistory Int          @map("id_state_history")
-  promotion      promotion?   @relation(fields: [idPromotion], references: [idPromotion])
-  idPromotion    Int          @map("id_promotion")
-  user           user         @relation(fields: [idUser], references: [idUser])
-  idUser         Int          @map("id_user")
+  carwash      carwash        @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash    Int            @map("id_carwash")
+  service      service        @relation(fields: [idService], references: [idService])
+  idService    Int            @map("id_service")
+  vehicle      vehicle        @relation(fields: [idVehicle], references: [idVehicle])
+  idVehicle    Int            @map("id_vehicle")
+  client       client         @relation(fields: [idClient], references: [idClient])
+  idClient     Int            @map("id_client")
+  promotion    promotion?     @relation(fields: [idPromotion], references: [idPromotion])
+  idPromotion  Int            @map("id_promotion")
+  user         user           @relation(fields: [idUser], references: [idUser])
+  idUser       Int            @map("id_user")
+  stateHistory stateHistory[]
 }
 
 model promotion {
@@ -203,14 +203,16 @@ model stateHistory {
   createdAt      DateTime  @default(now()) @map("created_at")
   endedAt        DateTime? @map("ended_at")
 
-  state       state         @relation(fields: [idState], references: [idState])
-  idState     Int           @map("id_state")
-  appointment appointment[]
+  state                    state        @relation(fields: [idState], references: [idState])
+  idState                  Int          @map("id_state")
+  appointment              appointment? @relation(fields: [appointmentIdAppointment], references: [idAppointment])
+  appointmentIdAppointment Int?
+  client                   client?      @relation(fields: [clientIdClient], references: [idClient])
+  clientIdClient           Int?
 
   @@map("state_histories")
 }
 
-// Global Models
 model brand {
   idBrand   Int      @id @default(autoincrement()) @map("id_brand")
   name      String
@@ -240,7 +242,6 @@ model model {
   @@unique([name, idBrand, idUser])
 }
 
-// Vehículo referenciando ambos modelos
 model vehicle {
   idVehicle Int      @id @default(autoincrement()) @map("id_vehicle")
   year      Int
@@ -249,7 +250,6 @@ model vehicle {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Referencias a modelos y marcas
   carwash      carwash       @relation(fields: [idCarwash], references: [idCarwash])
   idCarwash    Int           @map("id_carwash")
   client       client        @relation(fields: [idClient], references: [idClient])
