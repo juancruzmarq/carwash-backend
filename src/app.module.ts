@@ -12,6 +12,7 @@ import { CarwashModule } from './carwash/carwash.module';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MailerModule } from './mailer/mailer.module';
+import { StateModule } from './state/state.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MailerModule } from './mailer/mailer.module';
     ModelModule,
     CarwashModule,
     MailerModule,
+    StateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

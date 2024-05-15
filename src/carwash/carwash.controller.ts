@@ -43,7 +43,7 @@ export class CarwashController {
 
   @ApiOperation({ summary: 'Create a carwash' })
   @UseGuards(AccessTokenGuard)
-  @Post('/create')
+  @Post('/')
   async create(@Body() data: CreateCarwashDto) {
     return await this.carwashService.create(data);
   }

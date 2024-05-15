@@ -72,12 +72,11 @@ model user {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  carwash     carwash?
-  userRoles   userRole[]
-  brands      brand[]
-  models      model[]
-  appointment appointment[]
-  auth_token  auth_token[]
+  carwash    carwash?
+  userRoles  userRole[]
+  brands     brand[]
+  models     model[]
+  auth_token auth_token[]
 }
 
 model userRole {
@@ -158,22 +157,30 @@ model priceHistory {
 
 model appointment {
   idAppointment Int      @id @default(autoincrement()) @map("id_appointment")
+  note          String?
+  
+  // Date
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  carwash      carwash        @relation(fields: [idCarwash], references: [idCarwash])
-  idCarwash    Int            @map("id_carwash")
-  service      service        @relation(fields: [idService], references: [idService])
-  idService    Int            @map("id_service")
-  vehicle      vehicle        @relation(fields: [idVehicle], references: [idVehicle])
-  idVehicle    Int            @map("id_vehicle")
-  client       client         @relation(fields: [idClient], references: [idClient])
-  idClient     Int            @map("id_client")
-  promotion    promotion?     @relation(fields: [idPromotion], references: [idPromotion])
-  idPromotion  Int            @map("id_promotion")
-  user         user           @relation(fields: [idUser], references: [idUser])
-  idUser       Int            @map("id_user")
+  // Carwash
+  carwash   carwash @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash Int     @map("id_carwash")
+
+  // Vehicle
+  vehicle   vehicle @relation(fields: [idVehicle], references: [idVehicle])
+  idVehicle Int     @map("id_vehicle")
+
+  // Client
+  client   client @relation(fields: [idClient], references: [idClient])
+  idClient Int    @map("id_client")
+
+  // promotion
+  promotion   promotion? @relation(fields: [idPromotion], references: [idPromotion])
+  idPromotion Int?       @map("id_promotion")
+
   stateHistory stateHistory[]
+  services     service[]
 }
 
 model promotion {

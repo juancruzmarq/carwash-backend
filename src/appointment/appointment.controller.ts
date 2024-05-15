@@ -1,23 +1,28 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AppointmentService } from './appointment.service';
+import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @ApiTags('appointment')
 @Controller('appointment')
 export class AppointmentController {
-  constructor() {}
+  constructor(private readonly appointmentService: AppointmentService) {}
 
+  @ApiOperation({ summary: 'Find all appointments' })
   @Get('/')
-  async getAppointments() {
-    return [];
+  async findAll() {
+    return await this.appointmentService.findAll();
   }
 
-  @Get('/:id')
-  async getAppointmentById() {
-    return {};
+  @ApiOperation({ summary: 'Find all appointments by carwash' })
+  @Get('/carwash/:idCarwash')
+  async findAllByCarwash(idCarwash: number) {
+    return await this.appointmentService.findByCarwash(idCarwash);
   }
 
-  @Get('/carwash/:id')
-  async getAppointmentsByCarwash() {
-    return [];
+  @ApiOperation({ summary: 'Create a new appointment' })
+  @Post('/')
+  async create(@Body() data: CreateAppointmentDto) {
+    return await this.appointmentService.create(data);
   }
 }
