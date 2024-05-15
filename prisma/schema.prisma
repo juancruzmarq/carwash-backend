@@ -114,6 +114,7 @@ model carwash {
   email     String?
   capacity  Int?
   photo     String?
+  state     Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -128,12 +129,14 @@ model carwash {
 }
 
 model service {
-  idService Int      @id @default(autoincrement()) @map("id_service")
-  name      String
-  carwash   carwash  @relation(fields: [idCarwash], references: [idCarwash])
-  idCarwash Int      @map("id_carwash")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  idService   Int      @id @default(autoincrement()) @map("id_service")
+  name        String
+  description String?
+  state       Boolean  @default(true)
+  carwash     carwash  @relation(fields: [idCarwash], references: [idCarwash])
+  idCarwash   Int      @map("id_carwash")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   appointments   appointment[]
   priceHistories priceHistory[]
@@ -150,7 +153,6 @@ model priceHistory {
   service   service @relation(fields: [idService], references: [idService])
   idService Int     @map("id_service")
 
-  @@unique([idService, createdAt])
   @@map("price_history")
 }
 
